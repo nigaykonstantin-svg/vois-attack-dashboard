@@ -1,5 +1,6 @@
 import { formatNumber, formatReviews } from '../../utils/formatters';
 import WeaponButton from './WeaponButton';
+import ConversionFunnel from './ConversionFunnel';
 
 const AttackPanel = ({
     target,
@@ -66,6 +67,9 @@ const AttackPanel = ({
                     <div style={{ fontSize: '14px', fontWeight: '700', color: '#FFD93D' }}>{formatReviews(target.reviews)}</div>
                 </div>
             </div>
+
+            {/* Conversion Funnel (full) */}
+            <ConversionFunnel product={target} compact={false} />
 
             {/* Budget */}
             <div style={{ marginBottom: '12px' }}>

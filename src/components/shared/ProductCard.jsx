@@ -1,4 +1,5 @@
 import { formatNumber, formatReviews, getPriorityColor } from '../../utils/formatters';
+import ConversionFunnel from './ConversionFunnel';
 
 const ProductCard = ({
     product,
@@ -111,6 +112,9 @@ const ProductCard = ({
                     </div>
                 </div>
             </div>
+
+            {/* Conversion Funnel (compact) */}
+            <ConversionFunnel product={product} compact={true} />
 
             {/* Our product */}
             <div style={{

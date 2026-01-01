@@ -76,6 +76,7 @@ const parseDate = (dateStr) => {
 const transformToProducts = (rawData) => {
     // Group by SKU and aggregate
     const productMap = new Map();
+    let totalRevenueDebug = 0; // Debug counter
 
     rawData.forEach(row => {
         const sku = row['Артикул'];
@@ -83,11 +84,10 @@ const transformToProducts = (rawData) => {
 
         const date = parseDate(row['Дата']);
         const month = date ? date.getMonth() + 1 : null; // 1-12
-        const year = date ? date.getFullYear() : null;
 
-        // Determine if November or December 2025
-        const isNovember = month === 11 && year === 2025;
-        const isDecember = month === 12 && year === 2025;
+        // Determine if November or December (any year for flexibility)
+        const isNovember = month === 11;
+        const isDecember = month === 12;
 
         if (!productMap.has(sku)) {
             productMap.set(sku, {
@@ -96,12 +96,16 @@ const transformToProducts = (rawData) => {
                 price: parseRussianNumber(row['Средняя цена']),
                 avgPosition: parseRussianNumber(row['Средняя позиция']),
                 buyoutRate: parseRussianNumber(row['%выкупа']),
+                // Reviews & Rating from sheet (columns L & M if available)
+                reviews: parseRussianNumber(row['Отзывы']) || parseRussianNumber(row['Количество отзывов']) || 0,
+                rating: parseRussianNumber(row['Рейтинг']) || 0,
                 novemberOrders: 0,
                 novemberRevenue: 0,
                 decemberOrders: 0,
                 decemberRevenue: 0,
                 totalClicks: 0,
                 totalCartAdds: 0,
+                totalImpressions: 0, // NEW: Показы
                 dataPoints: 0,
                 positionSum: 0,
                 buyoutSum: 0,
@@ -114,20 +118,29 @@ const transformToProducts = (rawData) => {
         const revenue = parseRussianNumber(row['Заказано, руб']);
         const clicks = parseRussianNumber(row['Клики']);
         const cartAdds = parseRussianNumber(row['В корзину']);
+        const impressions = parseRussianNumber(row['Показы']); // NEW
         const position = parseRussianNumber(row['Средняя позиция']);
         const buyout = parseRussianNumber(row['%выкупа']);
         const price = parseRussianNumber(row['Средняя цена']);
 
+        totalRevenueDebug += revenue; // Track total for debug
+
+        // Aggregate into November or December buckets
         if (isNovember) {
             product.novemberOrders += orders;
             product.novemberRevenue += revenue;
         } else if (isDecember) {
             product.decemberOrders += orders;
             product.decemberRevenue += revenue;
+        } else {
+            // For other months or when date parsing fails, add to November bucket
+            product.novemberOrders += orders;
+            product.novemberRevenue += revenue;
         }
 
         product.totalClicks += clicks;
         product.totalCartAdds += cartAdds;
+        product.totalImpressions += impressions; // NEW
 
         // Track for averaging
         if (position > 0) {
@@ -142,7 +155,7 @@ const transformToProducts = (rawData) => {
         }
     });
 
-    // Convert map to array and calculate averages
+    // Convert map to array and calculate averages + funnel metrics
     const products = Array.from(productMap.values()).map((product, index) => {
         const avgPosition = product.dataPoints > 0
             ? Math.round(product.positionSum / product.dataPoints)
@@ -163,14 +176,27 @@ const transformToProducts = (rawData) => {
         else if (totalRevenue > 50000000) priority = 'high';
         else if (totalRevenue > 20000000) priority = 'medium';
 
+        // Calculate funnel metrics (NEW)
+        const totalOrders = product.novemberOrders + product.decemberOrders;
+        const ctr = product.totalImpressions > 0
+            ? ((product.totalClicks / product.totalImpressions) * 100).toFixed(2)
+            : 0;
+        const addToCartRate = product.totalClicks > 0
+            ? ((product.totalCartAdds / product.totalClicks) * 100).toFixed(2)
+            : 0;
+        const orderRate = product.totalCartAdds > 0
+            ? ((totalOrders / product.totalCartAdds) * 100).toFixed(2)
+            : 0;
+
         return {
             id: index + 1,
             sku: product.sku,
-            name: `${product.category} (${product.sku})`, // Will be enriched from name lookup
+            name: `${product.category} (${product.sku})`,
             category: product.category,
             wbUrl: `https://www.wildberries.ru/catalog/${product.sku}/detail.aspx`,
-            rating: 4.8, // Default, would need API to get actual
-            reviews: 0, // Default, would need API to get actual
+            // Reviews & Ratings (from sheet or defaults)
+            rating: product.rating > 0 ? product.rating : 4.8,
+            reviews: product.reviews,
             price: avgPrice,
             novemberOrders: product.novemberOrders,
             novemberRevenue: product.novemberRevenue,
@@ -178,11 +204,22 @@ const transformToProducts = (rawData) => {
             decemberRevenue: product.decemberRevenue,
             avgPosition: avgPosition,
             buyoutRate: parseFloat(avgBuyout),
+            // Funnel metrics (NEW)
+            totalImpressions: product.totalImpressions,
+            totalClicks: product.totalClicks,
+            totalCartAdds: product.totalCartAdds,
+            ctr: parseFloat(ctr),
+            addToCartRate: parseFloat(addToCartRate),
+            orderRate: parseFloat(orderRate),
             ourProduct: null,
             ourSku: null,
             priority,
         };
     });
+
+    // Debug: Log total revenue for verification
+    const totalRev = products.reduce((sum, p) => sum + p.novemberRevenue + p.decemberRevenue, 0);
+    console.log(`📊 Google Sheets Debug: ${rawData.length} rows → ${products.length} products → ₽${(totalRev / 1000000).toFixed(1)}M total`);
 
     // Sort by total revenue descending
     return products.sort((a, b) =>

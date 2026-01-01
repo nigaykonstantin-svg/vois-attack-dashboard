@@ -1,49 +1,163 @@
-import { useState, useEffect } from 'react'
-import MixitWarRoom from './MixitWarRoom'
-import Login from './components/Login'
+import './styles/globals.css';
+import { useWarRoom } from './hooks/useWarRoom';
+import Header from './components/layout/Header';
+import Navigation from './components/layout/Navigation';
+import BattlefieldTab from './components/tabs/BattlefieldTab';
+import ArsenalTab from './components/tabs/ArsenalTab';
+import EconomicsTab from './components/tabs/EconomicsTab';
+import IntelTab from './components/tabs/IntelTab';
 
 function App() {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const warRoom = useWarRoom();
 
-  // Проверяем, есть ли сохранённая сессия
-  useEffect(() => {
-    const savedUser = localStorage.getItem('vois_user')
-    if (savedUser) {
-      setUser(JSON.parse(savedUser))
-    }
-    setLoading(false)
-  }, [])
-
-  const handleLogin = (userData) => {
-    setUser(userData)
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('vois_user')
-    setUser(null)
-  }
-
-  if (loading) {
+  // Show loading state
+  if (warRoom.loading) {
     return (
       <div style={{
         minHeight: '100vh',
+        background: 'linear-gradient(180deg, #0a0a0f 0%, #12121a 100%)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#1a1a2e',
-        color: '#fff'
+        flexDirection: 'column',
+        gap: '16px',
+        color: '#fff',
+        fontFamily: "'Inter', -apple-system, sans-serif",
       }}>
-        Загрузка...
+        <div style={{
+          width: '48px',
+          height: '48px',
+          border: '3px solid rgba(255,107,107,0.2)',
+          borderTop: '3px solid #FF6B6B',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite',
+        }} />
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+        <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '14px' }}>
+          Загрузка данных из Google Sheets...
+        </p>
       </div>
-    )
+    );
   }
 
-  if (!user) {
-    return <Login onLogin={handleLogin} />
+  // Show error state
+  if (warRoom.error) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(180deg, #0a0a0f 0%, #12121a 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        gap: '16px',
+        color: '#fff',
+        fontFamily: "'Inter', -apple-system, sans-serif",
+        padding: '40px',
+      }}>
+        <div style={{ fontSize: '48px' }}>⚠️</div>
+        <h2 style={{ margin: 0, color: '#FF6B6B' }}>Ошибка загрузки данных</h2>
+        <p style={{ color: 'rgba(255,255,255,0.6)', textAlign: 'center', maxWidth: '500px' }}>
+          {warRoom.error}
+        </p>
+        <button
+          onClick={warRoom.refetch}
+          style={{
+            padding: '12px 24px',
+            background: 'linear-gradient(135deg, #FF6B6B, #FF8E53)',
+            border: 'none',
+            borderRadius: '8px',
+            color: '#fff',
+            fontWeight: '600',
+            cursor: 'pointer',
+          }}
+        >
+          Попробовать снова
+        </button>
+      </div>
+    );
   }
 
-  return <MixitWarRoom user={user} onLogout={handleLogout} />
+  return (
+    <div>
+      <Header
+        productsCount={warRoom.voisProducts.length}
+        filterMonth={warRoom.filterMonth}
+        setFilterMonth={warRoom.setFilterMonth}
+        totalVoisRevenue={warRoom.totalVoisRevenue}
+        totalBudget={warRoom.totalBudget}
+        activeTargets={warRoom.activeTargets}
+        lastUpdated={warRoom.lastUpdated}
+        refetch={warRoom.refetch}
+      />
+
+      <Navigation
+        activeTab={warRoom.activeTab}
+        setActiveTab={warRoom.setActiveTab}
+      />
+
+      <main style={{ padding: '20px 28px' }}>
+        {warRoom.activeTab === 'battlefield' && (
+          <BattlefieldTab
+            filteredProducts={warRoom.filteredProducts}
+            categories={warRoom.categories}
+            weapons={warRoom.weapons}
+            filterCategory={warRoom.filterCategory}
+            setFilterCategory={warRoom.setFilterCategory}
+            sortBy={warRoom.sortBy}
+            setSortBy={warRoom.setSortBy}
+            selectedTarget={warRoom.selectedTarget}
+            setSelectedTarget={warRoom.setSelectedTarget}
+            getTargetWeapons={warRoom.getTargetWeapons}
+            toggleWeapon={warRoom.toggleWeapon}
+            budgets={warRoom.budgets}
+            updateBudget={warRoom.updateBudget}
+            getProductData={warRoom.getProductData}
+            getGrowth={warRoom.getGrowth}
+          />
+        )}
+
+        {warRoom.activeTab === 'arsenal' && (
+          <ArsenalTab
+            weapons={warRoom.weapons}
+            getWeaponUsageCount={warRoom.getWeaponUsageCount}
+            addWeapon={warRoom.addWeapon}
+            updateWeapon={warRoom.updateWeapon}
+            deleteWeapon={warRoom.deleteWeapon}
+            teamMembers={warRoom.teamMembers}
+            weaponResponsibles={warRoom.weaponResponsibles}
+            setWeaponResponsible={warRoom.setWeaponResponsible}
+            getWeaponResponsible={warRoom.getWeaponResponsible}
+          />
+        )}
+
+        {warRoom.activeTab === 'economics' && (
+          <EconomicsTab
+            voisProducts={warRoom.voisProducts}
+            weapons={warRoom.weapons}
+            totalBudget={warRoom.totalBudget}
+            activeTargets={warRoom.activeTargets}
+            totalVoisRevenue={warRoom.totalVoisRevenue}
+            getTargetWeapons={warRoom.getTargetWeapons}
+            budgets={warRoom.budgets}
+            getProductData={warRoom.getProductData}
+          />
+        )}
+
+        {warRoom.activeTab === 'intel' && (
+          <IntelTab
+            voisProducts={warRoom.voisProducts}
+            getProductData={warRoom.getProductData}
+          />
+        )}
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
