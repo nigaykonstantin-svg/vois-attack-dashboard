@@ -257,7 +257,7 @@ const ProductDossier = ({
                                 <div style={{ background: 'rgba(78,205,196,0.1)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
                                     <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>ЦЕНА MIXIT</div>
                                     <div style={{ fontSize: '18px', fontWeight: '700', color: '#4ECDC4' }}>
-                                        {linkedMixit ? `₽${linkedMixit.price}` : '—'}
+                                        {linkedMixit ? `₽${linkedMixit.discountPrice || linkedMixit.price || '—'}` : '—'}
                                     </div>
                                 </div>
                                 <div style={{ background: 'rgba(255,215,61,0.1)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
@@ -265,9 +265,9 @@ const ProductDossier = ({
                                     <div style={{ fontSize: '18px', fontWeight: '700', color: '#FFD93D' }}>{formatReviews(product.reviews)}</div>
                                 </div>
                                 <div style={{ background: 'rgba(139,92,246,0.1)', borderRadius: '8px', padding: '14px', textAlign: 'center' }}>
-                                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>ОТЗЫВЫ MIXIT</div>
+                                    <div style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>ЗАКАЗЫ MIXIT</div>
                                     <div style={{ fontSize: '18px', fontWeight: '700', color: '#8b5cf6' }}>
-                                        {linkedMixit ? formatReviews(linkedMixit.reviews) : '—'}
+                                        {linkedMixit ? (linkedMixit.orderCount || linkedMixit.reviews ? formatNumber(linkedMixit.orderCount || linkedMixit.reviews) : '—') : '—'}
                                     </div>
                                 </div>
                             </div>
@@ -539,30 +539,32 @@ const ProductDossier = ({
                                         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Цена</span>
-                                                <span style={{ fontWeight: '600', color: linkedMixit.price < product.price ? '#2ED573' : '#FF4757' }}>
-                                                    ₽{linkedMixit.price}
+                                                <span style={{ fontWeight: '600', color: (linkedMixit.discountPrice || linkedMixit.price) < product.price ? '#2ED573' : '#FF4757' }}>
+                                                    ₽{linkedMixit.discountPrice || linkedMixit.price}
                                                     <span style={{ fontSize: '10px', marginLeft: '4px' }}>
-                                                        ({linkedMixit.price < product.price ? '-' : '+'}{Math.abs(linkedMixit.price - product.price)}₽)
+                                                        ({(linkedMixit.discountPrice || linkedMixit.price) < product.price ? '-' : '+'}{Math.abs((linkedMixit.discountPrice || linkedMixit.price) - product.price)}₽)
                                                     </span>
                                                 </span>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                 <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Рейтинг</span>
-                                                <span style={{ fontWeight: '600', color: '#FFD93D' }}>★ {linkedMixit.rating}</span>
+                                                <span style={{ fontWeight: '600', color: '#FFD93D' }}>★ {linkedMixit.rating || '—'}</span>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Отзывы</span>
-                                                <span style={{ fontWeight: '600', color: linkedMixit.reviews > product.reviews ? '#2ED573' : '#FF4757' }}>
-                                                    {formatReviews(linkedMixit.reviews)}
+                                                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Заказы (30д)</span>
+                                                <span style={{ fontWeight: '600', color: '#8b5cf6' }}>
+                                                    {linkedMixit.orderCount ? formatNumber(linkedMixit.orderCount) : (linkedMixit.reviews ? formatReviews(linkedMixit.reviews) : '—')}
                                                 </span>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Позиция</span>
-                                                <span style={{ fontWeight: '600' }}>—</span>
+                                                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Выручка (30д)</span>
+                                                <span style={{ fontWeight: '600', color: '#4ECDC4' }}>
+                                                    {linkedMixit.totalRevenue ? `₽${formatNumber(linkedMixit.totalRevenue)}` : '—'}
+                                                </span>
                                             </div>
                                             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Выкуп</span>
-                                                <span style={{ fontWeight: '600' }}>—</span>
+                                                <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>Скидка WB</span>
+                                                <span style={{ fontWeight: '600' }}>{linkedMixit.discountPercent ? `${linkedMixit.discountPercent}%` : '—'}</span>
                                             </div>
                                         </div>
                                     </div>
