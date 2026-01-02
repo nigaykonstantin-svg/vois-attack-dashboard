@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
-import { voisProducts } from '../data/voisProducts';
+import { voisProducts as staticVoisProducts } from '../data/voisProducts';
 import { weapons as defaultWeapons } from '../data/weapons';
 import { useMixitProducts } from './useMixitProducts';
+import { useGoogleSheets } from './useGoogleSheets';
 import { mixitProducts as staticMixitProducts } from '../data/mixitProducts';
 
 // Default team members
@@ -23,6 +24,23 @@ const loadFromStorage = (key, defaultValue) => {
 };
 
 export const useWarRoom = () => {
+    // Fetch VOIS products from Google Sheets
+    const {
+        products: sheetProducts,
+        loading,
+        error,
+        lastUpdated,
+        refetch
+    } = useGoogleSheets();
+
+    // Use Google Sheets data with static fallback
+    const voisProducts = useMemo(() => {
+        if (sheetProducts.length > 0) {
+            return sheetProducts;
+        }
+        return staticVoisProducts;
+    }, [sheetProducts]);
+
     // Fetch live MIXIT products from WB API
     const {
         products: liveMixitProducts,
