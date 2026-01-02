@@ -1,7 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { voisProducts } from '../data/voisProducts';
 import { weapons as defaultWeapons } from '../data/weapons';
-import { mixitProducts } from '../data/mixitProducts';
+import { useMixitProducts } from './useMixitProducts';
+import { mixitProducts as staticMixitProducts } from '../data/mixitProducts';
 
 // Default team members
 const DEFAULT_TEAM = [
@@ -22,6 +23,22 @@ const loadFromStorage = (key, defaultValue) => {
 };
 
 export const useWarRoom = () => {
+    // Fetch live MIXIT products from WB API
+    const {
+        products: liveMixitProducts,
+        loading: mixitLoading,
+        error: mixitError,
+        refetch: refetchMixit
+    } = useMixitProducts();
+
+    // Merge live MIXIT products with static fallback
+    const mixitProducts = useMemo(() => {
+        if (liveMixitProducts.length > 0) {
+            return liveMixitProducts;
+        }
+        return staticMixitProducts;
+    }, [liveMixitProducts]);
+
     // UI State
     const [activeTab, setActiveTab] = useState('battlefield');
     const [selectedTarget, setSelectedTarget] = useState(null);
@@ -408,6 +425,11 @@ export const useWarRoom = () => {
         totalBudget,
         activeTargets,
         totalVoisRevenue,
+
+        // MIXIT Live Data
+        mixitLoading,
+        mixitError,
+        refetchMixit,
 
         // Helpers
         getProductData,
