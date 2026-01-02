@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { formatNumber, formatReviews } from '../../utils/formatters';
+import AiAnalysis from './AiAnalysis';
 
 const ProductDossier = ({
     product,
@@ -30,6 +31,7 @@ const ProductDossier = ({
         { id: 'screenshots', label: '📸 Скриншоты', icon: '📸', count: dossier.screenshots?.length || 0 },
         { id: 'notes', label: '📝 Заметки', icon: '📝', count: dossier.notes?.length || 0 },
         { id: 'battlecard', label: '⚔️ Battle Card', icon: '⚔️' },
+        { id: 'ai', label: '🤖 AI Анализ', icon: '🤖' },
     ];
 
     const handleFileUpload = async (e) => {
@@ -576,6 +578,16 @@ const ProductDossier = ({
                                 </div>
                             )}
                         </div>
+                    )}
+
+                    {/* AI ANALYSIS TAB */}
+                    {activeTab === 'ai' && (
+                        <AiAnalysis
+                            product={product}
+                            mixitProduct={linkedMixit}
+                            notes={dossier.notes}
+                            screenshots={dossier.screenshots}
+                        />
                     )}
                 </div>
             </div>
