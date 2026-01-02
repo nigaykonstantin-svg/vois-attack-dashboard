@@ -16,7 +16,8 @@ const parseCSV = (csvText) => {
     const lines = csvText.trim().split('\n');
     if (lines.length < 2) return [];
 
-    const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+    // Use parseCSVLine for headers too - handles quoted values with commas
+    const headers = parseCSVLine(lines[0]).map(h => h.trim().replace(/"/g, ''));
     const data = [];
 
     for (let i = 1; i < lines.length; i++) {

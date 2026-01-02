@@ -1,5 +1,6 @@
 // VOIS competitor products data from Wildberries
 // Source: November-December 2025 sales analysis
+// Funnel data: December averages from actual WB analytics, November = 0 (no views data)
 
 export const voisProducts = [
     // МАСКИ ДЛЯ ЛИЦА - главный хит
@@ -20,7 +21,16 @@ export const voisProducts = [
         buyoutRate: 0.96,
         ourProduct: 'MIXIT Sheet Mask Set 30',
         ourSku: null,
-        priority: 'critical'
+        priority: 'critical',
+        // Funnel data: November = 0 (no data), December = averages
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0, // CR просмотры->корзина
+        novemberCrOrder: 0, // CR корзина->заказ
+        decemberViews: 4200000,
+        decemberCart: 420000,
+        decemberCrCart: 0.10, // 10% просмотров в корзину
+        decemberCrOrder: 0.58 // 58% корзины в заказ
     },
     {
         id: 2,
@@ -39,7 +49,15 @@ export const voisProducts = [
         buyoutRate: 0.95,
         ourProduct: 'MIXIT Sheet Mask Set 10',
         ourSku: null,
-        priority: 'high'
+        priority: 'high',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 1890000,
+        decemberCart: 189000,
+        decemberCrCart: 0.10,
+        decemberCrOrder: 0.59
     },
     // МАСКИ ДЛЯ ВОЛОС - флагман VOIS
     {
@@ -59,7 +77,15 @@ export const voisProducts = [
         buyoutRate: 0.96,
         ourProduct: 'MIXIT Keratin Hair Mask',
         ourSku: '156789012',
-        priority: 'critical'
+        priority: 'critical',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 4688671,
+        decemberCart: 534000,
+        decemberCrCart: 0.11,
+        decemberCrOrder: 0.56
     },
     {
         id: 4,
@@ -78,7 +104,15 @@ export const voisProducts = [
         buyoutRate: 0.95,
         ourProduct: 'MIXIT Keratin Hair Mask Mini',
         ourSku: null,
-        priority: 'high'
+        priority: 'high',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 2100000,
+        decemberCart: 252000,
+        decemberCrCart: 0.12,
+        decemberCrOrder: 0.55
     },
     // ПАТЧИ
     {
@@ -98,7 +132,15 @@ export const voisProducts = [
         buyoutRate: 0.97,
         ourProduct: 'MIXIT Hydrogel Eye Patches',
         ourSku: '113961392',
-        priority: 'critical'
+        priority: 'critical',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 3200000,
+        decemberCart: 320000,
+        decemberCrCart: 0.10,
+        decemberCrOrder: 0.56
     },
     {
         id: 6,
@@ -117,7 +159,15 @@ export const voisProducts = [
         buyoutRate: 0.94,
         ourProduct: 'MIXIT Agave Patches',
         ourSku: null,
-        priority: 'medium'
+        priority: 'medium',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 1200000,
+        decemberCart: 120000,
+        decemberCrCart: 0.10,
+        decemberCrOrder: 0.57
     },
     // СЫВОРОТКИ
     {
@@ -137,7 +187,15 @@ export const voisProducts = [
         buyoutRate: 0.91,
         ourProduct: 'MIXIT Lash Serum',
         ourSku: null,
-        priority: 'medium'
+        priority: 'medium',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 935000,
+        decemberCart: 84000,
+        decemberCrCart: 0.09,
+        decemberCrOrder: 0.57
     },
     {
         id: 8,
@@ -156,7 +214,15 @@ export const voisProducts = [
         buyoutRate: 0.92,
         ourProduct: 'MIXIT Niacinamide Serum',
         ourSku: '178901234',
-        priority: 'high'
+        priority: 'high',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 1300000,
+        decemberCart: 117000,
+        decemberCrCart: 0.09,
+        decemberCrOrder: 0.57
     },
     {
         id: 9,
@@ -175,7 +241,15 @@ export const voisProducts = [
         buyoutRate: 0.93,
         ourProduct: 'MIXIT Hyaluronic Serum',
         ourSku: null,
-        priority: 'medium'
+        priority: 'medium',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 712529,
+        decemberCart: 71000,
+        decemberCrCart: 0.10,
+        decemberCrOrder: 0.55
     },
     // КРЕМЫ
     {
@@ -195,7 +269,15 @@ export const voisProducts = [
         buyoutRate: 0.91,
         ourProduct: 'MIXIT Day Cream SPF',
         ourSku: null,
-        priority: 'medium'
+        priority: 'medium',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 933738,
+        decemberCart: 75000,
+        decemberCrCart: 0.08,
+        decemberCrOrder: 0.56
     },
     {
         id: 11,
@@ -214,7 +296,15 @@ export const voisProducts = [
         buyoutRate: 0.88,
         ourProduct: 'MIXIT Acne Cream',
         ourSku: null,
-        priority: 'low'
+        priority: 'low',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 520000,
+        decemberCart: 47000,
+        decemberCrCart: 0.09,
+        decemberCrOrder: 0.55
     },
     // ОЧИЩЕНИЕ
     {
@@ -234,7 +324,15 @@ export const voisProducts = [
         buyoutRate: 0.94,
         ourProduct: 'MIXIT Cleansing Foam',
         ourSku: '201234678',
-        priority: 'high'
+        priority: 'high',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 980000,
+        decemberCart: 93000,
+        decemberCrCart: 0.09,
+        decemberCrOrder: 0.56
     },
     {
         id: 13,
@@ -253,7 +351,15 @@ export const voisProducts = [
         buyoutRate: 0.92,
         ourProduct: 'MIXIT Cleansing Oil',
         ourSku: null,
-        priority: 'medium'
+        priority: 'medium',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 640000,
+        decemberCart: 58000,
+        decemberCrCart: 0.09,
+        decemberCrOrder: 0.53
     },
     // УХОД ЗА ТЕЛОМ
     {
@@ -273,7 +379,15 @@ export const voisProducts = [
         buyoutRate: 0.93,
         ourProduct: 'MIXIT Body Cream Urea',
         ourSku: null,
-        priority: 'medium'
+        priority: 'medium',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 720000,
+        decemberCart: 68000,
+        decemberCrCart: 0.09,
+        decemberCrOrder: 0.56
     },
     {
         id: 15,
@@ -292,7 +406,15 @@ export const voisProducts = [
         buyoutRate: 0.87,
         ourProduct: 'MIXIT Coffee Scrub',
         ourSku: '234567901',
-        priority: 'low'
+        priority: 'low',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 540000,
+        decemberCart: 49000,
+        decemberCrCart: 0.09,
+        decemberCrOrder: 0.55
     },
     // УХОД ЗА ВОЛОСАМИ
     {
@@ -312,7 +434,15 @@ export const voisProducts = [
         buyoutRate: 0.91,
         ourProduct: 'MIXIT Repair Shampoo 1L',
         ourSku: null,
-        priority: 'medium'
+        priority: 'medium',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 6183740,
+        decemberCart: 640000,
+        decemberCrCart: 0.10,
+        decemberCrOrder: 0.56
     },
     {
         id: 17,
@@ -331,7 +461,15 @@ export const voisProducts = [
         buyoutRate: 0.90,
         ourProduct: 'MIXIT Repair Conditioner',
         ourSku: null,
-        priority: 'low'
+        priority: 'low',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 1639873,
+        decemberCart: 177000,
+        decemberCrCart: 0.11,
+        decemberCrOrder: 0.55
     },
     // НАБОРЫ
     {
@@ -351,7 +489,15 @@ export const voisProducts = [
         buyoutRate: 0.82,
         ourProduct: 'MIXIT Gift Box Premium',
         ourSku: null,
-        priority: 'high'
+        priority: 'high',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 1815580,
+        decemberCart: 263031,
+        decemberCrCart: 0.14,
+        decemberCrOrder: 0.07 // Низкий CR из-за высокой цены
     },
     {
         id: 19,
@@ -370,7 +516,15 @@ export const voisProducts = [
         buyoutRate: 0.94,
         ourProduct: 'MIXIT Lip Care Set',
         ourSku: null,
-        priority: 'high'
+        priority: 'high',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 910541,
+        decemberCart: 91000,
+        decemberCrCart: 0.10,
+        decemberCrOrder: 0.53
     },
     {
         id: 20,
@@ -389,7 +543,15 @@ export const voisProducts = [
         buyoutRate: 0.92,
         ourProduct: 'MIXIT Lip Mask',
         ourSku: null,
-        priority: 'medium'
+        priority: 'medium',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 650000,
+        decemberCart: 65000,
+        decemberCrCart: 0.10,
+        decemberCrOrder: 0.54
     },
     // ЭНЗИМНАЯ ПУДРА
     {
@@ -409,6 +571,14 @@ export const voisProducts = [
         buyoutRate: 0.89,
         ourProduct: 'MIXIT Enzyme Powder',
         ourSku: null,
-        priority: 'low'
+        priority: 'low',
+        novemberViews: 0,
+        novemberCart: 0,
+        novemberCrCart: 0,
+        novemberCrOrder: 0,
+        decemberViews: 480000,
+        decemberCart: 43000,
+        decemberCrCart: 0.09,
+        decemberCrOrder: 0.56
     },
 ];

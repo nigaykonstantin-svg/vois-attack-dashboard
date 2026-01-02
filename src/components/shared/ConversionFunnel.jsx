@@ -1,22 +1,39 @@
 // Conversion Funnel visualization component
-// Shows: Impressions → CTR → Add to Cart Rate → Order Rate
+// Shows: Views → Cart → Orders with CR rates
+// Uses December data by default (November has no view data)
+
+import { formatNumber } from '../../utils/formatters';
 
 const ConversionFunnel = ({ product, compact = false }) => {
     if (!product) return null;
 
-    const {
-        totalImpressions = 0,
-        totalClicks = 0,
-        totalCartAdds = 0,
-        ctr = 0,
-        addToCartRate = 0,
-        orderRate = 0
-    } = product;
+    // Use December data (November has no views data)
+    const views = product.decemberViews || 0;
+    const cart = product.decemberCart || 0;
+    const orders = product.decemberOrders || 0;
+    const crCart = product.decemberCrCart || 0; // CR views → cart
+    const crOrder = product.decemberCrOrder || 0; // CR cart → orders
 
-    const totalOrders = (product.novemberOrders || 0) + (product.decemberOrders || 0);
+    // Format percentages
+    const crCartPct = (crCart * 100).toFixed(0);
+    const crOrderPct = (crOrder * 100).toFixed(0);
 
     // Compact version for ProductCard
     if (compact) {
+        // If no December data, show a message
+        if (views === 0) {
+            return (
+                <div style={{
+                    fontSize: '10px',
+                    color: 'rgba(255,255,255,0.4)',
+                    marginTop: '6px',
+                    fontStyle: 'italic'
+                }}>
+                    Данные воронки за декабрь...
+                </div>
+            );
+        }
+
         return (
             <div style={{
                 display: 'flex',
@@ -26,16 +43,16 @@ const ConversionFunnel = ({ product, compact = false }) => {
                 color: 'rgba(255,255,255,0.6)',
                 marginTop: '6px'
             }}>
-                <span title="CTR (Клики / Показы)">
-                    CTR: <span style={{ color: ctr >= 5 ? '#4ade80' : ctr >= 2 ? '#fbbf24' : '#f87171' }}>{ctr}%</span>
+                <span title="Просмотры (декабрь)">
+                    👁️ {formatNumber(views)}
                 </span>
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>→</span>
-                <span title="В корзину / Клики">
-                    Cart: <span style={{ color: addToCartRate >= 20 ? '#4ade80' : addToCartRate >= 10 ? '#fbbf24' : '#f87171' }}>{addToCartRate}%</span>
+                <span title="CR просмотры → корзина">
+                    🛒 <span style={{ color: crCart >= 0.12 ? '#4ade80' : crCart >= 0.08 ? '#fbbf24' : '#f87171' }}>{crCartPct}%</span>
                 </span>
                 <span style={{ color: 'rgba(255,255,255,0.2)' }}>→</span>
-                <span title="Заказы / В корзину">
-                    Order: <span style={{ color: orderRate >= 50 ? '#4ade80' : orderRate >= 30 ? '#fbbf24' : '#f87171' }}>{orderRate}%</span>
+                <span title="CR корзина → заказ">
+                    ✅ <span style={{ color: crOrder >= 0.55 ? '#4ade80' : crOrder >= 0.40 ? '#fbbf24' : '#f87171' }}>{crOrderPct}%</span>
                 </span>
             </div>
         );
@@ -45,34 +62,26 @@ const ConversionFunnel = ({ product, compact = false }) => {
     const stages = [
         {
             label: 'Показы',
-            value: totalImpressions.toLocaleString('ru-RU'),
+            value: formatNumber(views),
             rate: null,
-            color: '#6366f1',
+            color: '#667eea',
             width: 100
         },
         {
-            label: 'Клики',
-            value: totalClicks.toLocaleString('ru-RU'),
-            rate: ctr,
+            label: 'Корзина',
+            value: formatNumber(cart),
+            rate: crCartPct,
             rateLabel: 'CTR',
-            color: '#8b5cf6',
-            width: 80
-        },
-        {
-            label: 'В корзину',
-            value: totalCartAdds.toLocaleString('ru-RU'),
-            rate: addToCartRate,
-            rateLabel: 'CR',
-            color: '#a855f7',
-            width: 60
+            color: '#FFD93D',
+            width: 70
         },
         {
             label: 'Заказы',
-            value: totalOrders.toLocaleString('ru-RU'),
-            rate: orderRate,
+            value: formatNumber(orders),
+            rate: crOrderPct,
             rateLabel: 'CR',
             color: '#22c55e',
-            width: 40
+            width: 45
         },
     ];
 
@@ -93,43 +102,61 @@ const ConversionFunnel = ({ product, compact = false }) => {
             }}>
                 <span>📊</span>
                 <span>Воронка конверсии</span>
+                <span style={{
+                    fontSize: '9px',
+                    color: 'rgba(255,255,255,0.3)',
+                    marginLeft: 'auto'
+                }}>
+                    декабрь 2025
+                </span>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {stages.map((stage, idx) => (
-                    <div key={stage.label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {/* Funnel bar */}
-                        <div style={{
-                            width: `${stage.width}%`,
-                            background: `linear-gradient(90deg, ${stage.color}, ${stage.color}88)`,
-                            borderRadius: '4px',
-                            padding: '6px 10px',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            transition: 'all 0.3s ease'
-                        }}>
-                            <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>
-                                {stage.label}
-                            </span>
-                            <span style={{ fontSize: '11px', fontWeight: '600', color: '#fff' }}>
-                                {stage.value}
-                            </span>
-                        </div>
-
-                        {/* Conversion rate */}
-                        {stage.rate !== null && (
-                            <span style={{
-                                fontSize: '10px',
-                                color: stage.rate >= 20 ? '#4ade80' : stage.rate >= 5 ? '#fbbf24' : '#f87171',
-                                minWidth: '50px'
+            {views === 0 ? (
+                <div style={{
+                    fontSize: '11px',
+                    color: 'rgba(255,255,255,0.4)',
+                    textAlign: 'center',
+                    padding: '10px'
+                }}>
+                    Нет данных по просмотрам
+                </div>
+            ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {stages.map((stage, idx) => (
+                        <div key={stage.label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {/* Funnel bar */}
+                            <div style={{
+                                width: `${stage.width}%`,
+                                background: `linear-gradient(90deg, ${stage.color}, ${stage.color}88)`,
+                                borderRadius: '4px',
+                                padding: '6px 10px',
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                transition: 'all 0.3s ease'
                             }}>
-                                {stage.rateLabel}: {stage.rate}%
-                            </span>
-                        )}
-                    </div>
-                ))}
-            </div>
+                                <span style={{ fontSize: '10px', color: 'rgba(255,255,255,0.9)' }}>
+                                    {stage.label}
+                                </span>
+                                <span style={{ fontSize: '11px', fontWeight: '600', color: '#fff' }}>
+                                    {stage.value}
+                                </span>
+                            </div>
+
+                            {/* Conversion rate */}
+                            {stage.rate !== null && (
+                                <span style={{
+                                    fontSize: '10px',
+                                    color: parseInt(stage.rate) >= 50 ? '#4ade80' : parseInt(stage.rate) >= 20 ? '#fbbf24' : '#f87171',
+                                    minWidth: '50px'
+                                }}>
+                                    {stage.rateLabel}: {stage.rate}%
+                                </span>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };

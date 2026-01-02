@@ -6,6 +6,7 @@ import BattlefieldTab from './components/tabs/BattlefieldTab';
 import ArsenalTab from './components/tabs/ArsenalTab';
 import EconomicsTab from './components/tabs/EconomicsTab';
 import IntelTab from './components/tabs/IntelTab';
+import ProductDossier from './components/shared/ProductDossier';
 
 function App() {
   const warRoom = useWarRoom();
@@ -119,6 +120,7 @@ function App() {
             updateBudget={warRoom.updateBudget}
             getProductData={warRoom.getProductData}
             getGrowth={warRoom.getGrowth}
+            onOpenDossier={warRoom.setDossierProductId}
           />
         )}
 
@@ -153,9 +155,31 @@ function App() {
           <IntelTab
             voisProducts={warRoom.voisProducts}
             getProductData={warRoom.getProductData}
+            filterMonth={warRoom.filterMonth}
           />
         )}
       </main>
+
+      {/* Product Dossier Modal */}
+      {warRoom.dossierProductId && (() => {
+        const product = warRoom.voisProducts.find(p => p.id === warRoom.dossierProductId);
+        if (!product) return null;
+        return (
+          <ProductDossier
+            product={product}
+            mixitProducts={warRoom.mixitProducts}
+            dossier={warRoom.getDossier(product.id)}
+            onClose={() => warRoom.setDossierProductId(null)}
+            onLinkMixit={(mixitId) => warRoom.linkMixitProduct(product.id, mixitId)}
+            onAddScreenshot={(data, caption) => warRoom.addScreenshot(product.id, data, caption)}
+            onDeleteScreenshot={(ssId) => warRoom.deleteScreenshot(product.id, ssId)}
+            onAddNote={(text) => warRoom.addNote(product.id, text)}
+            onUpdateNote={(noteId, text) => warRoom.updateNote(product.id, noteId, text)}
+            onDeleteNote={(noteId) => warRoom.deleteNote(product.id, noteId)}
+            onExport={warRoom.exportDossiers}
+          />
+        );
+      })()}
     </div>
   );
 }

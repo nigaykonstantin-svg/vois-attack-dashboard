@@ -9,7 +9,8 @@ const ProductCard = ({
     weapons,
     isSelected,
     onClick,
-    budget
+    budget,
+    onOpenDossier
 }) => {
     return (
         <div
@@ -27,17 +28,43 @@ const ProductCard = ({
                 position: 'relative'
             }}
         >
-            {/* Priority badge */}
+            {/* Priority badge + Dossier button */}
             <div style={{
                 position: 'absolute',
-                top: '12px',
-                right: '12px',
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: getPriorityColor(product.priority),
-                boxShadow: `0 0 8px ${getPriorityColor(product.priority)}`
-            }} />
+                top: '10px',
+                right: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+            }}>
+                {onOpenDossier && (
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onOpenDossier(product.id); }}
+                        style={{
+                            padding: '3px 6px',
+                            background: 'rgba(102,126,234,0.2)',
+                            border: 'none',
+                            borderRadius: '4px',
+                            color: '#667eea',
+                            fontSize: '10px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '3px'
+                        }}
+                        title="Открыть досье"
+                    >
+                        📁
+                    </button>
+                )}
+                <div style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    background: getPriorityColor(product.priority),
+                    boxShadow: `0 0 8px ${getPriorityColor(product.priority)}`
+                }} />
+            </div>
 
             {/* Header */}
             <div style={{ marginBottom: '10px' }}>

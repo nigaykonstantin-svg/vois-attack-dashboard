@@ -16,7 +16,8 @@ const BattlefieldTab = ({
     budgets,
     updateBudget,
     getProductData,
-    getGrowth
+    getGrowth,
+    onOpenDossier
 }) => {
     return (
         <div className="animate-slide-up">
@@ -94,6 +95,7 @@ const BattlefieldTab = ({
                                 isSelected={isSelected}
                                 onClick={() => setSelectedTarget(isSelected ? null : product)}
                                 budget={budgets[product.id]}
+                                onOpenDossier={onOpenDossier}
                             />
                         );
                     })}

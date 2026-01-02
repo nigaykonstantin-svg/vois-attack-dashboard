@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { voisProducts } from '../data/voisProducts';
 import { weapons as defaultWeapons } from '../data/weapons';
+import { mixitProducts } from '../data/mixitProducts';
 
 // Default team members
 const DEFAULT_TEAM = [
@@ -24,6 +25,7 @@ export const useWarRoom = () => {
     // UI State
     const [activeTab, setActiveTab] = useState('battlefield');
     const [selectedTarget, setSelectedTarget] = useState(null);
+    const [dossierProductId, setDossierProductId] = useState(null); // For dossier modal
 
     // Team members (can be customized)
     const [teamMembers, setTeamMembers] = useState(() =>
@@ -38,6 +40,11 @@ export const useWarRoom = () => {
     // Weapon -> Responsible person mapping
     const [weaponResponsibles, setWeaponResponsibles] = useState(() =>
         loadFromStorage('warroom_responsibles', {})
+    );
+
+    // Product Dossiers: { productId: { mixitId, screenshots: [], notes: [] } }
+    const [productDossiers, setProductDossiers] = useState(() =>
+        loadFromStorage('warroom_dossiers', {})
     );
 
     // Attack assignments
@@ -197,6 +204,129 @@ export const useWarRoom = () => {
         });
     };
 
+    // === PRODUCT DOSSIER MANAGEMENT ===
+
+    // Persist dossiers to localStorage
+    useEffect(() => {
+        localStorage.setItem('warroom_dossiers', JSON.stringify(productDossiers));
+    }, [productDossiers]);
+
+    // Get dossier for a product
+    const getDossier = (productId) => {
+        return productDossiers[productId] || { mixitId: null, screenshots: [], notes: [] };
+    };
+
+    // Link MIXIT product to VOIS product
+    const linkMixitProduct = (productId, mixitId) => {
+        setProductDossiers(prev => ({
+            ...prev,
+            [productId]: {
+                ...getDossier(productId),
+                mixitId
+            }
+        }));
+    };
+
+    // Get linked MIXIT product
+    const getLinkedMixitProduct = (productId) => {
+        const dossier = getDossier(productId);
+        return dossier.mixitId ? mixitProducts.find(m => m.id === dossier.mixitId) : null;
+    };
+
+    // Add screenshot to dossier
+    const addScreenshot = (productId, imageData, caption = '') => {
+        const newScreenshot = {
+            id: `ss_${Date.now()}`,
+            data: imageData,
+            caption,
+            date: new Date().toISOString()
+        };
+        setProductDossiers(prev => ({
+            ...prev,
+            [productId]: {
+                ...getDossier(productId),
+                screenshots: [...(getDossier(productId).screenshots || []), newScreenshot]
+            }
+        }));
+        return newScreenshot;
+    };
+
+    // Delete screenshot
+    const deleteScreenshot = (productId, screenshotId) => {
+        setProductDossiers(prev => ({
+            ...prev,
+            [productId]: {
+                ...getDossier(productId),
+                screenshots: getDossier(productId).screenshots.filter(s => s.id !== screenshotId)
+            }
+        }));
+    };
+
+    // Add note to dossier
+    const addNote = (productId, text, author = 'admin') => {
+        const newNote = {
+            id: `note_${Date.now()}`,
+            text,
+            author,
+            date: new Date().toISOString()
+        };
+        setProductDossiers(prev => ({
+            ...prev,
+            [productId]: {
+                ...getDossier(productId),
+                notes: [...(getDossier(productId).notes || []), newNote]
+            }
+        }));
+        return newNote;
+    };
+
+    // Update note
+    const updateNote = (productId, noteId, newText) => {
+        setProductDossiers(prev => ({
+            ...prev,
+            [productId]: {
+                ...getDossier(productId),
+                notes: getDossier(productId).notes.map(n =>
+                    n.id === noteId ? { ...n, text: newText, updatedAt: new Date().toISOString() } : n
+                )
+            }
+        }));
+    };
+
+    // Delete note
+    const deleteNote = (productId, noteId) => {
+        setProductDossiers(prev => ({
+            ...prev,
+            [productId]: {
+                ...getDossier(productId),
+                notes: getDossier(productId).notes.filter(n => n.id !== noteId)
+            }
+        }));
+    };
+
+    // Export dossiers as JSON
+    const exportDossiers = () => {
+        const dataStr = JSON.stringify(productDossiers, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `warroom_dossiers_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+    };
+
+    // Import dossiers from JSON
+    const importDossiers = (jsonData) => {
+        try {
+            const data = JSON.parse(jsonData);
+            setProductDossiers(data);
+            return true;
+        } catch {
+            return false;
+        }
+    };
+
     // Computed metrics
     const totalBudget = Object.values(budgets).reduce((a, b) => a + (parseInt(b) || 0), 0);
 
@@ -220,12 +350,15 @@ export const useWarRoom = () => {
         filteredProducts,
         categories,
         teamMembers,
+        mixitProducts,
 
         // UI State
         activeTab,
         setActiveTab,
         selectedTarget,
         setSelectedTarget,
+        dossierProductId,
+        setDossierProductId,
 
         // Filters
         filterCategory,
@@ -257,6 +390,19 @@ export const useWarRoom = () => {
         addTeamMember,
         updateTeamMember,
         deleteTeamMember,
+
+        // Dossier Management
+        productDossiers,
+        getDossier,
+        linkMixitProduct,
+        getLinkedMixitProduct,
+        addScreenshot,
+        deleteScreenshot,
+        addNote,
+        updateNote,
+        deleteNote,
+        exportDossiers,
+        importDossiers,
 
         // Computed
         totalBudget,
