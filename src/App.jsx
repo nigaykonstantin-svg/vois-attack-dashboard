@@ -1,4 +1,5 @@
 import './styles/globals.css';
+import { useState, useEffect } from 'react';
 import { useWarRoom } from './hooks/useWarRoom';
 import Header from './components/layout/Header';
 import Navigation from './components/layout/Navigation';
@@ -7,8 +8,29 @@ import ArsenalTab from './components/tabs/ArsenalTab';
 import EconomicsTab from './components/tabs/EconomicsTab';
 import IntelTab from './components/tabs/IntelTab';
 import ProductDossier from './components/shared/ProductDossier';
+import LoginPage from './components/auth/LoginPage';
 
 function App() {
+  // Auth state
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('warroom_auth') === 'true';
+  });
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('warroom_auth');
+    localStorage.removeItem('warroom_user');
+    setIsAuthenticated(false);
+  };
+
+  // Show login if not authenticated
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
   const warRoom = useWarRoom();
 
   // Show loading state
@@ -95,6 +117,7 @@ function App() {
         activeTargets={warRoom.activeTargets}
         lastUpdated={warRoom.lastUpdated}
         refetch={warRoom.refetch}
+        onLogout={handleLogout}
       />
 
       <Navigation

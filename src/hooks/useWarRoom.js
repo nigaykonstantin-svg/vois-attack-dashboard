@@ -33,10 +33,27 @@ export const useWarRoom = () => {
         refetch
     } = useGoogleSheets();
 
-    // Use Google Sheets data with static fallback
+    // Use Google Sheets data enriched with static fallbacks for reviews/rating
     const voisProducts = useMemo(() => {
         if (sheetProducts.length > 0) {
-            return sheetProducts;
+            // Merge with static data to get reviews/rating that may be missing in Google Sheets
+            return sheetProducts.map(sheetProduct => {
+                // Find matching static product by SKU
+                const staticProduct = staticVoisProducts.find(
+                    sp => sp.sku === sheetProduct.sku || sp.sku === String(sheetProduct.sku)
+                );
+
+                // If sheet product has no reviews/rating, use static data
+                return {
+                    ...sheetProduct,
+                    reviews: sheetProduct.reviews > 0 ? sheetProduct.reviews : (staticProduct?.reviews || 0),
+                    rating: sheetProduct.rating > 0 ? sheetProduct.rating : (staticProduct?.rating || 4.8),
+                    ourProduct: staticProduct?.ourProduct || null,
+                    ourSku: staticProduct?.ourSku || null,
+                    // Keep decemberViews from static if missing in sheet
+                    decemberViews: sheetProduct.decemberViews || staticProduct?.decemberViews || 0,
+                };
+            });
         }
         return staticVoisProducts;
     }, [sheetProducts]);
@@ -150,7 +167,7 @@ export const useWarRoom = () => {
             if (sortBy === 'reviews') return b.reviews - a.reviews;
             return 0;
         });
-    }, [filterCategory, sortBy, filterMonth]);
+    }, [filterCategory, sortBy, filterMonth, voisProducts]);
 
     // Weapon assignment actions
     const toggleWeapon = (targetId, weaponId) => {

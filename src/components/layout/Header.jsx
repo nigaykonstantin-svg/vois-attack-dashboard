@@ -6,7 +6,8 @@ const Header = ({
     setFilterMonth,
     totalVoisRevenue,
     totalBudget,
-    activeTargets
+    activeTargets,
+    onLogout
 }) => {
     const months = [
         { id: 'all', label: 'Все' },
@@ -91,6 +92,26 @@ const Header = ({
                         {activeTargets}/{productsCount}
                     </div>
                 </div>
+
+                {/* Logout button */}
+                {onLogout && (
+                    <button
+                        onClick={onLogout}
+                        style={{
+                            padding: '8px 12px',
+                            background: 'rgba(255,255,255,0.05)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            borderRadius: '8px',
+                            color: 'rgba(255,255,255,0.5)',
+                            fontSize: '11px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                        }}
+                        title="Выйти"
+                    >
+                        🚪 Выйти
+                    </button>
+                )}
             </div>
         </header>
     );
