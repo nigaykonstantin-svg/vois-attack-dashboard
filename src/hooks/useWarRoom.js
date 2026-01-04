@@ -126,10 +126,10 @@ export const useWarRoom = () => {
         localStorage.setItem('warroom_responsibles', JSON.stringify(weaponResponsibles));
     }, [weaponResponsibles]);
 
-    // Derived: categories list
+    // Derived: categories list (updates when products load from Google Sheets)
     const categories = useMemo(() =>
         ['all', ...new Set(voisProducts.map(p => p.category))],
-        []
+        [voisProducts]
     );
 
     // Get product data based on month filter
